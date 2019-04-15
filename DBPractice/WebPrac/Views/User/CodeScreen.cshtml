@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "CodeScreen";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="jumbotron">
+<h2>Code Screen</h2>
+</div>
+<form action="~/User/CodeScreen" method="post">
+    <input type="text" name="code" id="code" required /><br />
+    <button class="btn btn-default" type="submit">Confirm</button>
+</form>

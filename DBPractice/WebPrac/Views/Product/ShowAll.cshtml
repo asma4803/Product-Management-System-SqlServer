@@ -1,0 +1,174 @@
+﻿@model List<PMS.Entities.ProductDTO>
+
+@{
+    ViewBag.Title = "ShowAll";
+    Layout = "~/Views/Shared/_MyProductLayout.cshtml";
+}
+
+@section scripts{
+
+    <script>
+        $(function () {
+            $(".editbutton").click(function () {
+                var pid = $(this).attr("pid");
+                $("#ProductID").val(pid);
+            });
+
+            $(".deleteBtn").click(function () {
+                var res = confirm("Do you want to delete this product?");
+                if (res) {
+                    var pid = $(this).attr("pid");
+                    $(this).closest("div").parent().remove();
+                    var settings = {
+                        type: "POST",
+                        dataType: "json",
+                        url: '@Url.Content("~/Product/Delete")',
+                        data: { "id": pid },
+                        success: function (result) {
+                            alert("ID"+pid+" product Deleted Successfully");
+                        }
+                    };
+                    $.ajax(settings);
+                }
+            });
+            $(".btnAddComment").click(function () {
+                var commBox = $(this).closest(".commentarea").find(".txtComment");
+                var comment = commBox.val();
+                var prodId = $(this).closest(".prodbox").attr("pid");
+                var MainCommDiv = $(this).closest(".prodbox");
+                var settings = {
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.Content("~/Product2/SaveComment")',
+                    data: { "CommentTxt": comment , "prodId": prodId},
+                    success: function (response) {
+                        var html = "<div class='comment'> <div class='picture'><img src='/UserPics/" + response.PictureName + "' style='width:30px; height:30px;border-radius:50%'/><span class='name1' >"+response.UserName+":</span><span class='comment-text'>" + comment + "</span> </div><div><span class='comment-date' style='padding-left:30px'>" + response.CommentOn + "</span></div></div>";
+                        MainCommDiv.find(".comments").append(html);
+                        commBox.text("");
+                    }
+                };
+                $.ajax(settings);
+            });
+            $(".name1").click(function () {
+                var mainDiv = $(this).closest(".comment");
+                var id01 = mainDiv.find(".id01");
+                var show = id01.find(".show");
+                show.html("");
+                var cid = mainDiv.attr("cid");
+                var set = {
+                    type: "POST",
+                    dataType: "json",
+                    url: '@Url.Content("~/User/getUser")',
+                    data: { "cid": cid },
+                    success: function (u) {
+                        id01.css("display", "block");
+                        var img = $("<img>");
+                        img.attr("src", "/UserPics/" + u.PictureName);
+                        img.css("width", "80px");
+                        img.css("height", "80px");
+                        var name = $("<p>");
+                        name.text(u.Name);
+                        var email = $("<p>");
+                        email.text(u.Email);
+                       
+                        show.append(img);
+                        show.append(name);
+                        show.append(email);
+                        var cancel = id01.find(".cross1");
+                        debugger;
+                        cancel.bind("click",function () {
+                            id01.css("display", "none");
+                        });
+                    }
+                };
+                //alert(cid);
+                $.ajax(set);
+            });
+        });
+    </script>
+
+}
+
+
+<div class="jumbotron">
+    <h2>Products</h2>
+</div>
+@if (TempData["Msg"] != null)
+{
+    <span class="btn active" style="text-shadow:2px 2px 2px #aaa1a1; font-family:'Comic Sans MS'; font-size:20px">@TempData["Msg"]</span><br /><br />
+
+}
+
+@*<a class="btn btn-default" href="/Product/New">New </a> <hr/>*@
+
+
+<form action='@Url.Content("~/Product/Edit2")' method="post">
+    <input type="hidden" name="ProductID" id="ProductID" />
+
+    <div class="main">
+        @foreach (var item in Model)
+        {
+            <div class="prodbox" pid="@item.ProductID" style="background:linear-gradient(to right, lightgrey, white);border-radius:5px; padding:15px">
+                <div style="float:left">
+                    <img src="/UploadedFiles/@item.PictureName" style="width:100px;height:100px;" />
+                </div>
+                <div style="float:left; padding-left:10px">
+                    <table >
+                        <tr><td><b>Product Id:</b></td><td>@item.ProductID</td></tr>
+                       <tr><td><b>Name: </b></td><td>@item.Name</td></tr>
+                        <tr><td><b>Price: </b> </td><td>@item.Price</td></tr>
+                        <tr><td><b>Created On: </b></td><td>@item.CreatedOn</td></tr>
+                        @{ 
+                            PMS.Entities.UserDTO user = PMS.BAL.UserBO.GetUserById(item.CreatedBy);
+                        }
+                         <tr><td><b>Created By:</b></td><td>@user.Name</td></tr>
+                    </table>
+                </div>
+                <div style="clear:both">
+                    @if (WebPrac.Security.SessionManager.User.IsAdmin || (item.CreatedBy == WebPrac.Security.SessionManager.User.UserID))
+                    {
+                        <input type="submit" value="Edit" class="editbutton btn btn-default" pid="@item.ProductID" />
+                        <input type="button" class="btn btn-default deleteBtn" value="Delete"  pid="@item.ProductID" />
+                    }
+                </div>
+                <div class="commentarea" style="margin-top:4px">
+                    <textarea class="txtComment" id="txtComment" rows="1" cols="50" style="height:34px" ></textarea>
+                    <input type="button" class="btnAddComment btn btn-default" style="height:35px" value="Add" />
+                </div>
+                <br />
+                <div class="comments">
+
+                    @foreach (var comment in item.Comments)
+                    {
+
+                        <div class="comment" cid="@comment.UserID">
+                            <div class="picture">
+                                <img src='@Url.Content("~/UserPics/" + comment.PictureName)' style="width:30px; height:30px; border-radius:50%" />
+                                <span class="name1" >@comment.UserName:</span>
+                                <span class="comment-text">@comment.CommentText</span> <br />
+                            </div>
+                            <div>
+                                <span class="comment-date" style="padding-left:30px">@comment.CommentOn</span>
+                            </div>
+                            <br />
+                            <div id="id01" class="id01 w3-modal w3-animate-opacity" >
+                                <div class="id02 w3-modal-content w3-card-4" style="width:400px">
+                                    <header class="w3-container w3-grey">
+                                        <span onclick="document.getElementById('id01').style.display='none'"
+                                              class="cross1 w3-button w3-large w3-display-topright">&times;</span>
+                                        <h2>Your Profile</h2>
+                                    </header>
+                                   <div class="show w3-container w3-white" style="background:linear-gradient(to top, lightgrey, white);padding:10px">
+                                       
+                                   </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <hr />
+        }
+    </div>
+</form>
+

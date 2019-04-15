@@ -1,0 +1,13 @@
+﻿
+@{
+    ViewBag.Title = "Admin";
+    Layout = "~/Views/Shared/_MyProductLayout.cshtml";
+}
+<div class="jumbotron">
+    <h2>Home</h2>
+</div>
+<h3> Welcome @WebPrac.Security.SessionManager.User.Name</h3>
+@if (TempData["msg"] != null){
+<span class="btn active" style="text-shadow:2px 2px 2px #aaa1a1; font-family:'Comic Sans MS'; font-size:20px">@TempData["msg"]</span><br /><br />
+    }
+

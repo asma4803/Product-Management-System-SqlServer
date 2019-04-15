@@ -1,0 +1,65 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <title>@ViewBag.title</title>
+    
+    <script>
+        window.BasePath = '@Url.Content("~")';
+    </script>
+
+    @Styles.Render("~/Content/css")
+    @RenderSection("styles", false)
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/moment.js"></script>
+
+    <script src="~/Scripts/MyAppGlobal.js"></script>
+
+    @RenderSection("scripts", false)
+
+</head>
+<body style="font-family:'Comic Sans MS'">
+    <div class="navbar navbar-inverse navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-collapse collapse">
+                
+                <ul class="nav navbar-nav">
+
+                    @if (WebPrac.Security.SessionManager.User.IsAdmin)
+                    {
+                        <li><a href="/Home/Admin" >Home</a></li>
+                        <li><a href="/Product/ShowAll" >Show All</a></li>
+                        @*<li><a href="/Product2/New" >Products-AJAX</a></li>*@
+                    }
+                    else
+                    {  
+                        <li><a href="/Home/NormalUser" >Home</a></li>
+                        <li><a href="/Product/ShowAll" >Show All</a></li>
+                        <li><a href="/User/EditProfile">Edit Profile</a></li>
+                    }
+                    <li><a href="/Product/New">Add New</a></li>
+                    <li><a href="/User/Logout" >Logout</a></li>
+
+                </ul>
+            </div>
+            </div>
+        </div>
+
+            <div class="container body-content">
+                @RenderBody()
+                <span style="color:red">@TempData["Message"]</span>
+                <hr />
+                <footer>
+                    <p>&copy; @DateTime.Now.Year - Product Management System</p>
+                </footer>
+            </div>
+
+</body>
+
+</html>

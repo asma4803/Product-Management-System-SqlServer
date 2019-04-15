@@ -1,0 +1,42 @@
+﻿
+@{
+    ViewBag.Title = "EditProfile";
+    Layout = "~/Views/Shared/_MyProductLayout.cshtml";
+}
+<div class="jumbotron">
+    <h2>Edit Profile</h2>
+</div>
+@{ 
+    int id = WebPrac.Security.SessionManager.User.UserID;
+    PMS.Entities.UserDTO user = PMS.DAL.UserDAO.GetUserById(id);
+}
+
+<form action="~/User/Save" enctype="multipart/form-data" method="post">
+    <input type="hidden" value="@user.Password" id="Password" name="Password"/>
+    <input type="hidden" value="@user.PictureName" id="PictureName" name="PictureName" />
+    <input type="hidden" value="@user.UserID" id="UserID" name="UserID" />
+    <input type="hidden" value="@user.Login" id="Login" name="Login" />
+    <table cellpadding="2" cellspacing="2">
+        <tr><td></td><td><img src="/UserPics/@user.PictureName" style="height:170px;width:170px" /></td></tr>
+        <tr>
+            <td>Name: </td>
+            <td><input type="text" id="Name" name="Name" value="@user.Name" required /></td>
+        </tr>
+        
+        <tr>
+            <td>Login: </td>
+            <td><input type="text" id="Login" name="Login" value="@user.Login" disabled /></td>
+        </tr>
+
+        <tr>
+            <td>Email: </td>
+            <td><input type="email" id="Email" name="Email" value="@user.Email" required /></td>
+        </tr>
+        <tr>
+            <td>Image:</td>
+            <td><input type="file" id="Image" name="Image" /></td>
+        </tr>
+        <tr><td></td><td><br /><div style="margin-left:110px"><input class="btn btn-default" type="submit" value="Update" /></div></td></tr>
+    </table>
+</form>
+

@@ -1,0 +1,137 @@
+﻿
+@{
+    ViewBag.Title = "NormalUser";
+    Layout = "~/Views/Shared/_MyProductLayout.cshtml";
+    int id = WebPrac.Security.SessionManager.User.UserID;
+}
+
+@section styles{
+    <style>
+        
+        .overlay
+        {
+            position: fixed;
+            display: none;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 0;
+            z-index: 101;
+            background-color: #000000;
+            opacity: .15;
+            filter: alpha(opacity=15);
+            -moz-opacity: .15;
+        }
+        .web_dialog
+        {
+            left: 50%;
+            top: 50%;
+            width: auto;
+            height: 200px;
+            background-color: White;
+            border-style:groove;
+            z-index: 102;
+            align-self:center;
+            display: none;
+            position: fixed;
+            margin-left: -100px;
+            margin-top: -100px;
+            border-radius:5px;
+        }
+        .dialog_title
+        {
+            background-color: Gray;
+            padding: 4px;
+            color: White;
+            border-bottom: solid 2px #336699;
+        }
+        .dialog_title a
+        {
+            color: White;
+            text-align: right;
+        }
+        .align_right
+        {
+            text-align: right;
+        }
+        .content
+        {
+            padding: 6px;
+        }
+    </style>
+    }
+@section scripts{
+    <script type="text/javascript">
+        $(document).ready(MainFunction);
+
+        function MainFunction() {
+            $('#lnkShowDialog').click(function (event) {
+                ShowDialog();
+                //To stop actual/default functionality of the link
+                event.preventDefault();
+                return false;
+            });
+
+            $('#lnkClose').click(function (e) {
+                HideDialog();
+                e.preventDefault();
+            });
+        } //End of MainFunction
+
+
+        function ShowDialog() {
+
+            $('#divoverlay').show();
+            $('#modal_dialog').slideDown(500);
+        }
+        function HideDialog() {
+            $('#divoverlay').hide();
+            $('#modal_dialog').slideUp(500);
+        }
+
+</script>
+    }
+
+<div class="jumbotron">
+    <h2>User</h2>
+</div>
+
+<h3> Welcome @WebPrac.Security.SessionManager.User.Name</h3>
+
+<div id="divoverlay" class="overlay">
+</div>
+<div>
+    <a href="#" class="btn btn-default" id="lnkShowDialog">Change password</a> <span id="spText"></span>
+</div>
+<div id="modal_dialog" class="web_dialog">
+
+    <form action="~/User/UpdatePassword" method="post">
+        <input type="hidden" value="@id" name="ID" id="ID" />
+        <table style="border:0px;" cellpadding="2" cellspacing="2">
+            <tr>
+                <td class="dialog_title">
+                    Change Password
+                </td>
+                <td class="dialog_title align_right">
+                    <a id="lnkClose" class="btn btn-default" style="color:black;" href="#">close</a>
+                </td>
+            </tr>
+            <tr>
+                <td>Old Password:</td>
+                <td><input type="password" id="old_password" name="old_password" required/></td>
+            </tr>
+            <tr>
+                <td>New Password:</td>
+                <td><input type="password" id="new_password" name="new_password" required /></td>
+            </tr>
+            <tr>
+                <td></td>
+                <td><div style="margin-left:100px"><input class="btn btn-default" type="submit" value="Change" /></div></td>
+            </tr>
+        </table>
+    </form>
+</div>
+
+
